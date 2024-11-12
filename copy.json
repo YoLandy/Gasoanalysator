@@ -1,0 +1,97 @@
+{
+    "Analyse C": 47.487,
+    "Analyse S": 47.487,
+    "Naves mass": 1110,
+    "Analyse time": 10,
+    "Control exp C": 0.15,
+    "Control exp S": 0.1543,
+    "Koeff C": 0.01,
+    "Koeff S": 1.0,
+    "Choose_koeffs": {
+        "C": [
+            {
+                "key": "k1",
+                "val": 0.01
+            },
+            {
+                "key": "\u04431 ",
+                "val": 1
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            }
+        ],
+        "S": [
+            {
+                "key": "k2",
+                "val": 0.01
+            },
+            {
+                "key": "",
+                "val": 1
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            },
+            {
+                "key": "",
+                "val": 0
+            }
+        ]
+    },
+    "RadioBox": 0
+}
