@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QApplication
-from PyQt5.QtCore import QObject, pyqtSignal, QTimer
-from PyQt5 import uic
+from PyQt5.QtCore import QObject, pyqtSignal, QTimer, Qt
+from utils.datamanager.data import DataManager
+from PyQt5 import uic, QtGui
 
 from instruments.gasoanalisator.gashandler import (
     GICommands,
@@ -21,99 +22,98 @@ class GraphCell(QWidget):
     def __init__(self, parent):
         super(GraphCell, self).__init__(parent)
         uic.loadUi("front/graphcell.ui", self)
-        self.gas = None
+
         self.calculator = None
         self.title = None
         self.info = ""
-        self.command = None
-
-        self.channel_i = 0
-        self.channel_labels = ["CO", "CH", "CO2", "O2"]
-        self.datas = {channel_label: [] for channel_label in self.channel_labels}
-
         self.n = 0
 
-    def setup(self, gas, title, info, calculator):
-        self.gas = gas
+        b = QtGui.QFont()
+        b.setPixelSize(20)
+
+        pen = pg.mkPen(color=(255, 255, 200), width=1)
+        self.widget.plotItem.getAxis("left").setPen(pen)
+        self.widget.plotItem.getAxis("bottom").setPen(pen)
+        self.widget.plotItem.getAxis("left").setTickFont(b)
+        self.widget.plotItem.getAxis("bottom").setTickFont(b)
+        self.widget.plotItem.setContentsMargins(10, 10, 10, 10)
+
+        self.datas = {}
+
+        self.ce = False
+
+    def setup(self, title, channels_count, info, calculator):
         self.title = title
         self.info = info
         self.title_label.setText(self.title)
         self.info_label.setText(self.info)
-        self.gas.responce.connect(self.recieve)
-        self.timer = QTimer()
         self.calculator = calculator
 
-    def send(self, command):
-        self.command = command
-        self.gas.send_command(command)
+        self.datas = {str(i): [] for i in range(1, channels_count + 1)}
 
-    def recieve(self, responce):
-        code = responce["code"]
-        content = responce["content"]
+    def add(self, data):
+        for name in self.datas:
+            self.datas[name].append(data[name])
 
-        if code == GIApiStatus.error and content == GIAnswerStatus.passive_state:
-            self.send(GICommands.set_active)
-            return
-
-        if self.command == GICommands.set_active:
-            if code == GIApiStatus.status and content == GIStatus.ok:
-                self.send(GICommands.get_data)
-            else:
-                self.status_signal.emit(responce)
-
-        if self.command == GICommands.get_data:
-            if code == GIApiStatus.data:
-                self.process_data_dot(responce)
-
-        if self.command == GICommands.set_zero:
-            self.show_zeroing_progress()
-            self.start_status_updating()
-
-        if self.command == GICommands.get_status:
-            if code == GIApiStatus.status and content in [
-                GIStatus.in_progress,
-                GIStatus.started_zero,
-            ]:
-                self.show_zeroing_progress()
-            if code == GIApiStatus.status and content == GIStatus.done_zeroing:
-                print("emiting done zeroing")
-                self.done_zeroing.emit()
-                self.show_end_zeroing_progress()
-                self.end_status_updating()
-
-    def process_data_dot(self, responce):
-
-        for channel_name in self.datas:
-            self.datas[channel_name].append(responce["content"][channel_name])
-
-        if self.channel_i < 3:
-            current_channel_name = self.channel_labels[self.channel_i]
-            if responce["content"][current_channel_name] > 7000:
-                self.channel_i += 1
-
-        current_channel_name = self.channel_labels[self.channel_i]
-        data = self.datas[current_channel_name]
+        i_actual = self.get_actual_i()
 
         self.widget.clear()
-        self.widget.plot(data)
+
+        colors = {"1": "r", "2": "g", "3": "b", "4": "y"}
+
+        for name in self.datas:
+            data = self.datas[name]
+            if name == i_actual:
+                self.widget.plot(data, pen=pg.mkPen(color=(colors[name]), width=5))
+            else:
+                self.widget.plot(
+                    data, pen=pg.mkPen(color=(colors[name]), width=2, style=Qt.DashLine)
+                )
+
+        self.prettize_plot()
+
+        data = self.datas[i_actual]
+        self.widget.setXRange(0, len(data))
+        self.widget.setYRange(min(data), max(data))
         self.calculator.set_data(data)
         conc = self.calculator.calc_concentrate_int()
-        self.info_label.setText(f"конц: {round(conc * 100, 4)}%")
+        mass = self.calculator.calc_pure_integral_with_coeff()
+        # self.info_label.setText(f"конц: {round(conc * 100, 4)}%")
+        self.combobox.clear()
+        if not self.ce:
+            self.combobox.addItems([f"{round(conc * 100, 4)}%", f"{round(mass, 4)} мг"])
+        else:
+            self.combobox.addItems([f"{round(mass, 4)} мг", f"{round(conc * 100, 4)}%"])
+
+    def prettize_plot(self):
+        axis = self.widget.getAxis("left")  # or 'bottom' for the x-axis
+
+        # Function to format labels with padding
+        def format_label(value, a, b):
+            if max(value) < 10 and min(value) > -10:
+                return ["{:.3f}".format(int(x)) for x in value]
+            return [
+                str(int(x)).zfill(5) for x in value
+            ]  # Adjust '10' for desired width
+
+        # Set the tick labels using a custom function
+        axis.tickStrings = format_label
+        # Update the plot to reflect the changes
+        pg.QtGui.QGuiApplication.processEvents()
 
     def show_end_conc(self):
         conc = self.calculator.calc_concentrate()
-        self.info_label.setText(f"конц: {round(conc * 100, 4)}%")
+        mass = self.calculator.calc_mass()
+        self.combobox.clear()
+        if not self.ce:
+            self.combobox.addItems([f"{round(conc * 100, 4)}%", f"{round(mass, 4)} мг"])
+        else:
+            self.combobox.addItems([f"{round(mass, 4)} мг", f"{round(conc * 100, 4)}%"])
 
     def clean(self):
         self.widget.clear()
         for name in self.datas:
             self.datas[name] = []
-
-    def tick(self):
-        self.send(GICommands.get_data)
-
-    def zeroing(self):
-        self.send(GICommands.set_zero)
 
     def show_zeroing_progress(self):
         self.n += 1
@@ -122,13 +122,14 @@ class GraphCell(QWidget):
     def show_end_zeroing_progress(self):
         self.info_label.setText("")
 
-    def start_status_updating(self):
-        self.timer.timeout.connect(self.timer_update_slot)
-        self.timer.start(1000)
+    def get_actual_i(self):
+        i_actual = "4"
 
-    def end_status_updating(self):
-        self.timer.stop()
-        self.timer.disconnect()
+        for name in sorted(self.datas.keys()):
+            data = self.datas[name]
+            print(name, max(data), min(data))
+            if max(data) < DataManager.get_param("THRESHOLD"):
+                i_actual = name
+                break
 
-    def timer_update_slot(self):
-        self.send(GICommands.get_status)
+        return i_actual

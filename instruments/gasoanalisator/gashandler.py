@@ -100,6 +100,7 @@ class GasoanalysatorHandler(Instrument):
         self.send(command.value)
 
     def check_buffer(self, buffer):
+        # return buffer.startswith(b"\x8A") and buffer.endswith(b"\x85")
         return b"\x8A" in buffer and b"\x85" in buffer
 
     def predprocess_data(self, buffer):
@@ -125,7 +126,6 @@ class GasoanalysatorHandler(Instrument):
         handler which handles answer on "get data" command
         """
         answer = {}
-        #                              низки высо  сера
         for i, paramname in enumerate(["CO", "CH", "CO2", "O2", "NO", "L"]):
             answer[paramname] = int(
                 float_from_bytes(content[6 * i : 6 * (i + 1)]) * 10**4

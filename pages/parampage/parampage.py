@@ -26,6 +26,8 @@ class ParamPage(BasePage):
     def __init__(self):
         super(ParamPage, self).__init__()
 
+        self.setWindowFlags(Qt.FramelessWindowHint)
+
         self.back_btn.clicked.connect(self.pause)
         self.back_btn.clicked.connect(self.save_before_close)
         self._save_param_signal.connect(self.save_param)

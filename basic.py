@@ -22,7 +22,8 @@ class BasePage(QMainWindow):
         uic.loadUi(self.UI_FILEPATH, self)
 
     def startup(self):
-        self.setStyleSheet(self.MAIN_STYLESHEET)
+        pass
+        # self.setStyleSheet(self.MAIN_STYLESHEET)
 
     def start(self):
         self.show()

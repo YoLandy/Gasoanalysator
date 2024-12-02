@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QLineEdit,
     QMainWindow,
+    QDesktopWidget,
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5 import uic
@@ -25,71 +26,69 @@ class ConfirmationPage(BasePage):
 
     def __init__(self):
         super(ConfirmationPage, self).__init__()
-        self.c_save_btn.clicked.connect(
-            lambda ch, flagname="c", flagval=True: self.clicked_slot(flagname, flagval)
-        )
-        self.c_cancel_btn.clicked.connect(
-            lambda ch, flagname="c", flagval=False: self.clicked_slot(flagname, flagval)
-        )
-        self.s_save_btn.clicked.connect(
-            lambda ch, flagname="s", flagval=True: self.clicked_slot(flagname, flagval)
-        )
-        self.s_cancel_btn.clicked.connect(
-            lambda ch, flagname="s", flagval=False: self.clicked_slot(flagname, flagval)
-        )
 
-        self.c_save = False
-        self.s_save = False
+        self.setWindowFlags(Qt.FramelessWindowHint)
 
-        self.c_mass = 0
-        self.s_mass = 0
+        self.rbs = [self.c_save_rb, self.c_cancel_rb, self.s_save_rb, self.s_cancel_rb]
 
-        self.decision_c = False
-        self.decision_s = False
-
-        self.flags = {"c": self.c_save, "s": self.s_save}
-
-        self.decisions = {"c": self.decision_c, "s": self.decision_s}
+        self.c_save_rb.toggled.connect(self.clicked_slot)
+        self.c_cancel_rb.toggled.connect(self.clicked_slot)
+        self.s_save_rb.toggled.connect(self.clicked_slot)
+        self.s_cancel_rb.toggled.connect(self.clicked_slot)
 
         self.data = {}
 
-    def clicked_slot(self, flagname, flagval):
-        print(flagname, flagval)
-        self.flags[flagname] = flagval
-
-        if flagname == "c":
-            self.decision_c = True
-
-        if flagname == "s":
-            self.decision_s = True
-
-        print(self.decision_s, self.decision_c)
-
-        if self.decision_s and self.decision_c:
+    def clicked_slot(self):
+        if len([1 for rb in self.rbs if rb in self.rbs if rb.isChecked()]) == 2:
             self.update_params()
             self.confirm_succes_signal.emit()
             self.end()
 
+    def location_on_the_screen(self):
+        ag = QDesktopWidget().availableGeometry()
+        sg = QDesktopWidget().screenGeometry()
+
+        widget = self.geometry()
+        x = (ag.width() - widget.width()) // 2
+
+        y = ag.height() - widget.height() - 50
+        self.move(x, y)
+
     def startslot(self, data):
+        self.location_on_the_screen()
         self.start()
+        self.reset_rbs()
         self.data = data
-        self.c_last_value_label.setText(f"Старое значение КО по С {data['C']['last']}")
+        self.c_last_value_label.setText(
+            f"Старое значение КО по С {round(data['C']['last'], 4)}"
+        )
         self.c_current_value_label.setText(
-            f"Измеренное значение КО по С {data['C']['actual']}"
+            f"Измеренное значение КО по С {round(data['C']['actual'], 4)}"
         )
 
-        self.s_last_value_label.setText(f"Старое значение КО по S {data['S']['last']}")
+        self.s_last_value_label.setText(
+            f"Старое значение КО по S {round(data['S']['last'], 4)}"
+        )
         self.s_current_value_label.setText(
-            f"Измеренное значение КО по S {data['S']['actual']}"
+            f"Измеренное значение КО по S {round(data['S']['actual'], 4)}"
         )
 
     def update_params(self):
-        if self.c_save:
-            last, actual = self.data["C"]["last"] + self.data["C"]["actual"]
-            DataManager.set_param((last + actual) / 2)
-        if self.s_save:
-            last, actual = self.data["S"]["last"] + self.data["S"]["actual"]
-            DataManager.set_param((last + actual) / 2)
+        if self.c_save_rb.isChecked():
+            print("change c")
+            last, actual = self.data["C"]["last"], self.data["C"]["actual"]
+            DataManager.save_param("Control exp C", (last + actual) / 2)
+        if self.s_save_rb.isChecked():
+            print("change s")
+            last, actual = self.data["S"]["last"], self.data["S"]["actual"]
+            DataManager.save_param("Control exp S", (last + actual) / 2)
+
+    def reset_rbs(self):
+        for rb in self.rbs:
+            rb.setAutoExclusive(False)
+            rb.setChecked(False)
+            rb.repaint()
+            rb.setAutoExclusive(True)
 
     def end(self):
         self.pause()

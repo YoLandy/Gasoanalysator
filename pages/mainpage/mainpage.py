@@ -30,34 +30,27 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         uic.loadUi("front/mainwin.ui", self)
         self.graphcells = [self.c_graphcell, self.s_graphcell]
+        self.c_graphcell.setup("Углерод", 4, "", Calculator([], "C"))
+        self.s_graphcell.setup("Сера", 2, "", Calculator([], "S"))
+
+        self.timer = QTimer()
+
+        self.gasreader = GasReader()
+        self.gasreader.status_signal.connect(self.operate_status)
+        self.gasreader.data_signal.connect(self.operate_data)
 
         self.analysis_btn.clicked.connect(self.start_analysis)
         self.control_exp_btn.clicked.connect(self.start_control_exp)
-        self.timer = QTimer()
-
-        self.c_graphcell.setup(
-            GasoanalysatorHandler("COM6"), "График углерода", "", Calculator([], "C")
-        )
-        time.sleep(0.1)
-        self.s_graphcell.setup(
-            GasoanalysatorHandler("COM7"), "График серы", "", Calculator([], "S")
-        )
 
         self.cancel_btn.clicked.connect(self.stop_ticking)
         self.zero_button.clicked.connect(self.zeroing)
-
         self.params_btn.clicked.connect(self.pause)
 
-        for graphcell in self.graphcells:
-            graphcell.done_zeroing.connect(self.done_zeroing_slot)
-
-        self.all_zero = 0
-
         self.progressBar.setValue(0)
+        self.show_confirm = False
 
         self.start()
-        self.show_confirm = False
-        self.show()
+        self.showMaximized()
 
     def pause(self):
         self.enable_interface(False)
@@ -79,6 +72,26 @@ class MainWindow(QMainWindow):
             self.params_btn,
         ]:
             btn.setEnabled(en)
+            if en == True and btn != self.cancel_btn:
+                btn.setStyleSheet('font: 75 16pt "MS Shell Dlg 2";')
+
+    def operate_status(self, status):
+        print("status slot")
+        if status == "zeroing":
+            for graphcell in self.graphcells:
+                graphcell.show_zeroing_progress()
+        if status == "done zeroing":
+            self.enable_interface(True)
+            for graphcell in self.graphcells:
+                graphcell.show_end_zeroing_progress()
+
+        print(status)
+
+    def operate_data(self, data):
+        print("data slot")
+        dataC, dataS = data["C"], data["S"]
+        self.c_graphcell.add(dataC)
+        self.s_graphcell.add(dataS)
 
     def tick(self):
         self.progressBar.setValue(self.progressBar.value() + 1)
@@ -94,8 +107,7 @@ class MainWindow(QMainWindow):
                 self.show_confirmation_page()
             return
 
-        for graphcell in self.graphcells:
-            graphcell.tick()
+        self.gasreader.get_data()
 
     def show_confirmation_page(self):
         self.show_confirmation_page_signal.emit(
@@ -120,6 +132,10 @@ class MainWindow(QMainWindow):
             graphcell.clean()
 
     def start_analysis(self):
+        self.c_graphcell.ce = False
+        self.analysis_btn.setStyleSheet(
+            'font: 75 16pt "MS Shell Dlg 2"; color: rgb(255, 0, 0);'
+        )
         self.show_confirm = False
         self.clean()
         self.enable_interface(False)
@@ -127,6 +143,10 @@ class MainWindow(QMainWindow):
         self.start_ticking(DataManager.get_param("Analyse time"))
 
     def start_control_exp(self):
+        self.c_graphcell.ce = True
+        self.control_exp_btn.setStyleSheet(
+            'font: 75 16pt "MS Shell Dlg 2"; color: rgb(255, 0, 0);'
+        )
         self.show_confirm = True
         self.clean()
         self.enable_interface(False)
@@ -146,15 +166,10 @@ class MainWindow(QMainWindow):
 
     def zeroing(self):
         self.enable_interface(False)
-        for graphcell in self.graphcells:
-            graphcell.zeroing()
+        self.gasreader.zeroing()
 
     def done_zeroing_slot(self):
-        self.all_zero += 1
-
-        if self.all_zero == 2:
-            self.enable_interface(True)
-            self.all_zero = 0
+        self.enable_interface(True)
 
     def set_time(self):
         time = DataManager.get_param("Analyse time")

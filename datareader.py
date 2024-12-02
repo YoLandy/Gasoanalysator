@@ -19,17 +19,17 @@ import sys
 
 
 class GasReader(QWidget):
-    RUDE_COMPORT = "COM6"
-    PREC_COMPORT = "COM7"
+    RUDE_COMPORT = "COM7"
+    PREC_COMPORT = "COM6"
 
-    status_signal = pyqtSignal(dict)
+    status_signal = pyqtSignal(str)
     data_signal = pyqtSignal(dict)
 
-    def __init__(self, parent):
-        super(GasReader, self).__init__(parent)
-        self.gas_rude = GasoanalysatorHandler(self.RUDE_COMPORT, "rude")
+    def __init__(self):
+        super(GasReader, self).__init__()
+        self.gas_rude = GasoanalysatorHandler(self.RUDE_COMPORT, label="rude")
         time.sleep(0.1)
-        self.gas_prec = GasoanalysatorHandler(self.PREC_COMPORT, "prec")
+        self.gas_prec = GasoanalysatorHandler(self.PREC_COMPORT, label="prec")
 
         self.datacollector = DataCollector()
         self.datacollector.data_good.connect(self.return_data)
@@ -38,9 +38,10 @@ class GasReader(QWidget):
         self.timer = QTimer()
 
         for gas in [self.gas_rude, self.gas_prec]:
-            gas.responce.connect(self.recieve_any)
+            gas.responce.connect(self.recieve)
 
         self.command = None
+        self.already_zeroing = False
 
     def get_data(self):
         self.send(GICommands.get_data)
@@ -51,9 +52,13 @@ class GasReader(QWidget):
     def return_status(self, status):
         self.status_signal.emit(status)
 
-    def send(self, command):
+    def send(self, command, gas=None):
         self.command = command
-        for gas in [self.gas_rude, self.gas_prec]:
+
+        if gas is None:
+            for gas_ in [self.gas_rude, self.gas_prec]:
+                gas_.send_command(command)
+        else:
             gas.send_command(command)
 
     def zeroing(self):
@@ -65,21 +70,23 @@ class GasReader(QWidget):
         gas = self.sender()
 
         if code == GIApiStatus.error and content == GIAnswerStatus.passive_state:
-            gas.send_command(GICommands.set_active)
+            self.send(GICommands.set_active, gas)
             return
 
         if self.command == GICommands.set_active:
             if code == GIApiStatus.status and content == GIStatus.ok:
-                gas.send_command(GICommands.get_data)
+                self.send(GICommands.get_data, gas)
             else:
                 self.status_signal.emit(str(responce) + gas.label)
 
         if self.command == GICommands.get_data:
             if code == GIApiStatus.data:
-                self.datacollector(responce, gas)
+                self.datacollector.collect_data(content, gas)
 
         if self.command == GICommands.set_zero:
-            self.start_status_updating()
+            if not self.already_zeroing:
+                self.start_status_updating()
+                self.already_zeroing = True
 
         if self.command == GICommands.get_status:
             if code == GIApiStatus.status and content in [
@@ -97,6 +104,7 @@ class GasReader(QWidget):
         self.timer.start(1000)
 
     def end_status_updating(self):
+        self.already_zeroing = False
         self.timer.stop()
         self.timer.disconnect()
 
@@ -104,11 +112,12 @@ class GasReader(QWidget):
         self.send(GICommands.get_status)
 
 
-class DataCollector:
+class DataCollector(QObject):
     data_good = pyqtSignal(dict)
     status_good = pyqtSignal(str)
 
     def __init__(self) -> None:
+        super(DataCollector, self).__init__()
         self.data_steak = {
             "C": {"1": None, "2": None, "3": None, "4": None},
             "S": {
@@ -119,20 +128,21 @@ class DataCollector:
         self.status_income = {"prec": "", "rude": ""}
 
     def collect_status(self, status, gas):
-        self.status_income[gas.label] == status
+        self.status_income[gas.label] = status
 
         if self.status_income["prec"] and self.status_income["rude"]:
             if self.status_income["prec"] != self.status_income["rude"]:
                 print("OH NOOOOOO!!!!!!!!!", self.status_income)
             self.status_good.emit(self.status_income["prec"])
+            self.status_income = {"prec": "", "rude": ""}
 
     def collect_data(self, content, sender):
-        if sender.label == "rude":
+        if sender.label == "prec":
             self.data_steak["C"]["1"] = content["CO"]
             self.data_steak["C"]["2"] = content["CH"]
             self.data_steak["S"]["1"] = content["CO2"]
 
-        if sender.label == "prec":
+        if sender.label == "rude":
             self.data_steak["C"]["3"] = content["CO"]
             self.data_steak["C"]["4"] = content["CH"]
             self.data_steak["S"]["2"] = content["CO2"]
