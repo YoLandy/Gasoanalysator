@@ -8,11 +8,12 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QLineEdit,
     QMainWindow,
+    QMessageBox
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5 import uic
 
-from basic import BasePage
+from pages.basic import BasePage
 from utils.datamanager.data import DataManager
 
 import pyqtgraph as pg
@@ -38,48 +39,54 @@ class ParamPage(BasePage):
                 "sb": self.mass_sb,
                 "ok": self.mass_save_btn,
                 "cancel": self.mass_cancel_btn,
+                "label": 'масса навески',
             },
             "Control exp C": {
                 "sb": self.control_exp_C_sb,
                 "ok": self.control_exp_C_save_btn,
                 "cancel": self.control_exp_C_cancel_btn,
+                "label": 'контрольное значение по C',
             },
             "Control exp S": {
                 "sb": self.control_exp_S_sb,
                 "ok": self.control_exp_S_save_btn,
                 "cancel": self.control_exp_S_cancel_btn,
+                "label": 'контрольное значение по S',
             },
             "Koeff C": {
                 "sb": self.koeff_C_sb,
                 "ok": self.koeff_C_save_btn,
                 "cancel": self.koeff_C_cancel_btn,
+                "label": 'коэффициент по C',
             },
             "Koeff S": {
                 "sb": self.koeff_S_sb,
                 "ok": self.koeff_S_save_btn,
                 "cancel": self.koeff_S_cancel_btn,
+                "label": 'коэффициент по S',
             },
             "Analyse time": {
                 "sb": self.time_sb,
                 "ok": self.time_save_btn,
                 "cancel": self.time_cancel_btn,
+                "label": 'время анализа',
             },
         }
 
         self.C_koeffs = [
             {
-                "line": eval(f"self.lineEdit_{i}"),
-                "sb": eval(f"self.doubleSpinBox_{i}"),
-                "rb": eval(f"self.radioButton_{i}"),
+                "line": getattr(self, f"lineEdit_{i}"),
+                "sb": getattr(self, f"doubleSpinBox_{i}"),
+                "rb": getattr(self, f"radioButton_{i}"),
             }
             for i in range(1, 11)
         ]
 
         self.S_koeffs = [
             {
-                "line": eval(f"self.lineEdit_{i}"),
-                "sb": eval(f"self.doubleSpinBox_{i}"),
-                "rb": eval(f"self.radioButton_{i}"),
+                "line": getattr(self, f"lineEdit_{i}"),
+                "sb": getattr(self, f"doubleSpinBox_{i}"),
+                "rb": getattr(self, f"radioButton_{i}"),
             }
             for i in range(11, 21)
         ]
@@ -115,15 +122,27 @@ class ParamPage(BasePage):
             self.param_map[paramname]["ok"].clicked.connect(
                 lambda ch, param=paramname: self._save_param_signal.emit(param)
             )
+
             self.param_map[paramname]["cancel"].clicked.connect(
                 lambda ch, param=paramname: self._update_param_signal.emit(param)
             )
 
     def save_param(self, paramname):
-        print("save", paramname)
-        DataManager.save_param(paramname, self.param_map[paramname]["sb"].value())
-        if paramname in ["Koeff C", "Koeff S"]:
-            self.deny_choose(paramname)
+        sb = self.param_map[paramname]["sb"]
+        if sb.value() == DataManager.get_param(paramname):
+            return
+        
+        reply = QMessageBox.question(
+            self, "Подтверждение", f"Вы уверены, что хотите сохранить значение {self.param_map[paramname]['label']}?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            print("save", paramname)
+            DataManager.save_param(paramname, self.param_map[paramname]["sb"].value())
+            if paramname in ["Koeff C", "Koeff S"]:
+                self.deny_choose(paramname)
+        else:
+            self.update_param(paramname)
 
     def update_param(self, paramname):
         print("update", paramname)

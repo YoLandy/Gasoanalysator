@@ -1,10 +1,9 @@
 {
-    "THRESHOLD": 7000,
     "Analyse C": 47.487,
     "Analyse S": 47.487,
-    "Naves mass": 1117,
-    "Analyse time": 40,
-    "Control exp C": 0.6790123395,
+    "Naves mass": 1000.0,
+    "Analyse time": 11,
+    "Control exp C": 0.33905335724999996,
     "Control exp S": 0.6790123395,
     "Koeff C": 1.0,
     "Koeff S": 0.01,

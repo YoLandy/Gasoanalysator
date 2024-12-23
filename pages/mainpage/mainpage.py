@@ -1,23 +1,14 @@
 import os
 import sys
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (
-    QApplication,
-    QWidget,
-    QLabel,
-    QPushButton,
-    QLineEdit,
-    QMainWindow,
-)
+from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5 import uic
 
-from basic import BasePage
 from utils.datamanager.data import DataManager
 from utils.calculator.calculator import Calculator
 
-from instruments.gasoanalisator.gashandler import GasoanalysatorHandler
-from datareader import GasReader
+from instruments.gasoanalisator.gasreader import GasReader
 
 import pyqtgraph as pg
 import time
@@ -25,6 +16,7 @@ import time
 
 class MainWindow(QMainWindow):
     show_confirmation_page_signal = pyqtSignal(dict)
+    window_closed = pyqtSignal()
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -32,6 +24,8 @@ class MainWindow(QMainWindow):
         self.graphcells = [self.c_graphcell, self.s_graphcell]
         self.c_graphcell.setup("Углерод", 4, "", Calculator([], "C"))
         self.s_graphcell.setup("Сера", 2, "", Calculator([], "S"))
+
+        self.setWindowTitle('cheSCan 1.0')
 
         self.timer = QTimer()
 
@@ -94,8 +88,6 @@ class MainWindow(QMainWindow):
         self.s_graphcell.add(dataS)
 
     def tick(self):
-        self.progressBar.setValue(self.progressBar.value() + 1)
-
         if self.progressBar.value() >= self.progressBar.maximum():
             self.stop_ticking()
 
@@ -108,6 +100,7 @@ class MainWindow(QMainWindow):
             return
 
         self.gasreader.get_data()
+        self.progressBar.setValue(self.progressBar.value() + 1)
 
     def show_confirmation_page(self):
         self.show_confirmation_page_signal.emit(
@@ -188,3 +181,7 @@ class MainWindow(QMainWindow):
 
     def show_time(self, time):
         self.time_label.setText(f"Время анализа, c {time}")
+
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        event.accept()

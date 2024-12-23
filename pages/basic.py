@@ -8,12 +8,13 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QLineEdit,
     QMainWindow,
+    QWidget,
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5 import uic
 
 
-class BasePage(QMainWindow):
+class BasePage(QWidget):
     UI_FILEPATH = ""
     MAIN_STYLESHEET = ""
 

@@ -3,13 +3,14 @@ from PyQt5.QtCore import QObject, pyqtSignal, QTimer, Qt
 from utils.datamanager.data import DataManager
 from PyQt5 import uic, QtGui
 
+from config import THRESHOLD
+
 from instruments.gasoanalisator.gashandler import (
     GICommands,
     GIApiStatus,
     GIStatus,
     GIAnswerStatus,
 )
-
 
 import pyqtgraph as pg
 
@@ -50,6 +51,7 @@ class GraphCell(QWidget):
         self.calculator = calculator
 
         self.datas = {str(i): [] for i in range(1, channels_count + 1)}
+        self.prettize_plot()
 
     def add(self, data):
         for name in self.datas:
@@ -70,15 +72,19 @@ class GraphCell(QWidget):
                     data, pen=pg.mkPen(color=(colors[name]), width=2, style=Qt.DashLine)
                 )
 
-        self.prettize_plot()
-
         data = self.datas[i_actual]
+        print('datalen', len(data))
         self.widget.setXRange(0, len(data))
-        self.widget.setYRange(min(data), max(data))
+        
+        if not (max(data) == 0 and min(data) == 0):
+            self.widget.setYRange(min(data), max(data))
+
+        print(f'resize {min(data), max(data)}')
+
         self.calculator.set_data(data)
         conc = self.calculator.calc_concentrate_int()
         mass = self.calculator.calc_pure_integral_with_coeff()
-        # self.info_label.setText(f"конц: {round(conc * 100, 4)}%")
+
         self.combobox.clear()
         if not self.ce:
             self.combobox.addItems([f"{round(conc * 100, 4)}%", f"{round(mass, 4)} мг"])
@@ -90,12 +96,14 @@ class GraphCell(QWidget):
 
         # Function to format labels with padding
         def format_label(value, a, b):
+            if value == []:
+                return value
             if max(value) < 10 and min(value) > -10:
-                return ["{:.3f}".format(int(x)) for x in value]
+                return [" {:.3f}".format(float(x)) for x in value]
             return [
-                str(int(x)).zfill(5) for x in value
+                "{:>6}".format(int(x)) for x in value
             ]  # Adjust '10' for desired width
-
+            
         # Set the tick labels using a custom function
         axis.tickStrings = format_label
         # Update the plot to reflect the changes
@@ -123,12 +131,12 @@ class GraphCell(QWidget):
         self.info_label.setText("")
 
     def get_actual_i(self):
-        i_actual = "4"
+        i_actual = max(self.datas.keys())
 
         for name in sorted(self.datas.keys()):
             data = self.datas[name]
             print(name, max(data), min(data))
-            if max(data) < DataManager.get_param("THRESHOLD"):
+            if max(data) < THRESHOLD:
                 i_actual = name
                 break
 

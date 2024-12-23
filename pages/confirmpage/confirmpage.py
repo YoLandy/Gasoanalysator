@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5 import uic
 
-from basic import BasePage
+from pages.basic import BasePage
 from utils.datamanager.data import DataManager
 from utils.calculator.calculator import Calculator
 
@@ -56,8 +56,8 @@ class ConfirmationPage(BasePage):
 
     def startslot(self, data):
         self.location_on_the_screen()
-        self.start()
         self.reset_rbs()
+        self.start()
         self.data = data
         self.c_last_value_label.setText(
             f"Старое значение КО по С {round(data['C']['last'], 4)}"
@@ -84,11 +84,17 @@ class ConfirmationPage(BasePage):
             DataManager.save_param("Control exp S", (last + actual) / 2)
 
     def reset_rbs(self):
+        print('reset rbs')
+        self.buttonGroup.setExclusive(False)
+        self.buttonGroup_2.setExclusive(False)
         for rb in self.rbs:
-            rb.setAutoExclusive(False)
             rb.setChecked(False)
             rb.repaint()
-            rb.setAutoExclusive(True)
+        self.buttonGroup.setExclusive(True)
+        self.buttonGroup_2.setExclusive(True)
+
+
+        
 
     def end(self):
         self.pause()

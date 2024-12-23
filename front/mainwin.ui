@@ -216,12 +216,34 @@ background-color: red;</string>
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1166</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuversion">
+    <property name="title">
+     <string>version</string>
+    </property>
+    <addaction name="actionv_1_0"/>
+   </widget>
+   <addaction name="menuversion"/>
+  </widget>
+  <action name="actionv_1_0">
+   <property name="text">
+    <string>v 1.0</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>GraphCell</class>
    <extends>QWidget</extends>
-   <header>graphcell</header>
+   <header>pages.mainpage.graphcell</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
