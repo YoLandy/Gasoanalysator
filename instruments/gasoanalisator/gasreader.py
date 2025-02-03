@@ -44,6 +44,8 @@ class GasReader(QWidget):
         self.command = None
         self.already_zeroing = False
 
+        self.dataloger = DataLogger()
+
     def get_data(self):
         self.send(GICommands.get_data)
 
@@ -82,6 +84,7 @@ class GasReader(QWidget):
 
         if self.command == GICommands.get_data:
             if code == GIApiStatus.data:
+                self.dataloger.log(gas, content)
                 self.datacollector.collect_data(content, gas)
 
         if self.command == GICommands.set_zero:
@@ -111,3 +114,17 @@ class GasReader(QWidget):
 
     def timer_update_slot(self):
         self.send(GICommands.get_status)
+
+
+class DataLogger():
+    def __init__(self):
+        self.filename = 'logs.txt'
+        self.save_str('gas label, "CO", "CH", "CO2", "O2", "NO", "L"')
+
+    def save_str(self, textline):
+        with open(self.filename, 'a') as file:
+            file.write(textline)
+            file.write('\n')
+
+    def log(self, gas, content):
+        self.save_str(f"{gas.label}, { ','.join([str(content[key]) for key in ['CO', 'CH', 'CO2', 'O2', 'NO', 'L']])}")

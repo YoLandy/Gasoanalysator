@@ -132,12 +132,20 @@ class GraphCell(QWidget):
 
     def get_actual_i(self):
         i_actual = max(self.datas.keys())
+        print('-------------------------------')
+        print(self.title)
+        print('channels count', len(self.datas))
 
         for name in sorted(self.datas.keys()):
             data = self.datas[name]
-            print(name, max(data), min(data))
+            print(f'channel: {name}, min val: {min(data)}, max val: {max(data)}')        
+
+        for name in sorted(self.datas.keys()):
+            data = self.datas[name]
             if max(data) < THRESHOLD:
                 i_actual = name
+                print('actual channel:', i_actual)
                 break
+        print('-------------------------------')
 
         return i_actual
