@@ -36,14 +36,14 @@ class DataCollector(QObject):
 
     def collect_data(self, content, sender):
         if sender.label == "prec":
-            self.data_steak["C"]["1"] = content["CO"]
-            self.data_steak["C"]["2"] = content["CH"]
-            self.data_steak["S"]["1"] = content["CO2"]
+            self.data_steak["C"]["1"] = content["CO2"]
+            self.data_steak["C"]["2"] = content["CO"]
+            self.data_steak["S"]["1"] = content["CH"]
 
         if sender.label == "rude":
-            self.data_steak["C"]["3"] = content["CO"]
-            self.data_steak["C"]["4"] = content["CH"]
-            self.data_steak["S"]["2"] = content["CO2"]
+            self.data_steak["C"]["3"] = content["CO2"]
+            self.data_steak["C"]["4"] = content["CO"]
+            self.data_steak["S"]["2"] = content["CH"]
 
         if self.is_full(self.data_steak["C"]) and self.is_full(self.data_steak["S"]):
             self.data_good.emit(self.data_steak)

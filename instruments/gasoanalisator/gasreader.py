@@ -119,7 +119,7 @@ class GasReader(QWidget):
 class DataLogger():
     def __init__(self):
         self.filename = 'logs.txt'
-        self.save_str('gas label, "CO", "CH", "CO2", "O2", "NO", "L"')
+        self.save_str('gas label\t"CO"\t"CH"\t"CO2"\t"O2"\t"NO"\t"L"')
 
     def save_str(self, textline):
         with open(self.filename, 'a') as file:
@@ -127,4 +127,4 @@ class DataLogger():
             file.write('\n')
 
     def log(self, gas, content):
-        self.save_str(f"{gas.label}, { ','.join([str(content[key]) for key in ['CO', 'CH', 'CO2', 'O2', 'NO', 'L']])}")
+        self.save_str(gas.label + '\t' + '\t'.join([str(content[key]) for key in ['CO', 'CH', 'CO2', 'O2', 'NO', 'L']]))
