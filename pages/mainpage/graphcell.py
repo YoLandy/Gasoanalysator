@@ -95,9 +95,6 @@ class GraphCell(QWidget):
         else:
             self.combobox.addItems([f"{round(mass, 4)} мг", f"{round(conc * 100, 4)}%"])
 
-        if self.title == 'Углерод':
-            self.datalogger.save(self.datas, self.calculator)
-
     def prettize_plot(self):
         axis = self.widget.getAxis("left")  # or 'bottom' for the x-axis
 
@@ -127,6 +124,9 @@ class GraphCell(QWidget):
             self.combobox.addItems([f"{round(conc * 100, 4)}%", f"{round(mass, 4)} мг"])
         else:
             self.combobox.addItems([f"{round(mass, 4)} мг", f"{round(conc * 100, 4)}%"])
+
+        if self.title == 'Углерод':
+            self.datalogger.save(self.datas, self.calculator)
 
     def clean(self):
         self.widget.clear()
@@ -164,7 +164,7 @@ class GraphCell(QWidget):
 class ConcDataLogger():
     def __init__(self):
         self.filename = 'conc_c.txt'
-        self.save_str('\t1\t2\t3\t4')
+        self.save_str('1\t2\t3\t4')
 
     def save_str(self, textline):
         with open(self.filename, 'a') as file:
@@ -176,6 +176,6 @@ class ConcDataLogger():
 
         for channel, data in datas.items():
             calculator.set_data(data)
-            concentrations[channel] = calculator.calc_concentrate_int()
+            concentrations[channel] = calculator.calc_concentrate()
 
         self.save_str('\t'.join([str(concentration * 100) for concentration in concentrations.values()]))
