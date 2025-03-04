@@ -25,6 +25,15 @@ class Calculator:
             self.koeff_recalc = DataManager.get_param("Koeff S")
             self.last_ce = DataManager.get_param("Control exp S")
 
+    def update_koeff(self):
+        if self.gastype == "C":
+            self.koeff_recalc = DataManager.get_param("Koeff C")
+            self.last_ce = DataManager.get_param("Control exp C")
+
+        else:
+            self.koeff_recalc = DataManager.get_param("Koeff S")
+            self.last_ce = DataManager.get_param("Control exp S")
+
     def set_mass(self, mass):
         self.naves_mass = mass
 
@@ -65,6 +74,7 @@ class Calculator:
         return I7 * COEFFS[self.gastype]
 
     def calc_concentrate(self):
+        self.update_koeff()
         return (
             self.koeff_recalc
             * (self.calc_mass() - self.last_ce)
@@ -73,6 +83,7 @@ class Calculator:
         )
 
     def calc_concentrate_int(self):
+        self.update_koeff()
         return (
             self.koeff_recalc
             * (self.calc_pure_integral_with_coeff())

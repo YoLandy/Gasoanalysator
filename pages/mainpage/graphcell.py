@@ -42,6 +42,7 @@ class GraphCell(QWidget):
         self.datas = {}
 
         self.ce = False
+        self.is_logger = False
 
     def setup(self, title, channels_count, info, calculator):
         self.title = title
@@ -52,6 +53,9 @@ class GraphCell(QWidget):
 
         self.datas = {str(i): [] for i in range(1, channels_count + 1)}
         self.prettize_plot()
+        if title == 'Углерод' and not self.is_logger:
+            self.is_logger = True
+            self.datalogger = ConcDataLogger()
 
     def add(self, data):
         for name in self.datas:
@@ -91,6 +95,9 @@ class GraphCell(QWidget):
         else:
             self.combobox.addItems([f"{round(mass, 4)} мг", f"{round(conc * 100, 4)}%"])
 
+        if self.title == 'Углерод':
+            self.datalogger.save(self.datas, self.calculator)
+
     def prettize_plot(self):
         axis = self.widget.getAxis("left")  # or 'bottom' for the x-axis
 
@@ -110,6 +117,9 @@ class GraphCell(QWidget):
         pg.QtGui.QGuiApplication.processEvents()
 
     def show_end_conc(self):
+        i_actual = self.get_actual_i()
+        data = self.datas[i_actual]
+        self.calculator.set_data(data)
         conc = self.calculator.calc_concentrate()
         mass = self.calculator.calc_mass()
         self.combobox.clear()
@@ -149,3 +159,23 @@ class GraphCell(QWidget):
         print('-------------------------------')
 
         return i_actual
+    
+
+class ConcDataLogger():
+    def __init__(self):
+        self.filename = 'conc_c.txt'
+        self.save_str('\t1\t2\t3\t4')
+
+    def save_str(self, textline):
+        with open(self.filename, 'a') as file:
+            file.write(textline)
+            file.write('\n')
+
+    def save(self, datas, calculator):        
+        concentrations = {}
+
+        for channel, data in datas.items():
+            calculator.set_data(data)
+            concentrations[channel] = calculator.calc_concentrate_int()
+
+        self.save_str('\t'.join([str(concentration * 100) for concentration in concentrations.values()]))
