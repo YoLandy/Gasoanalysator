@@ -72,6 +72,7 @@ class GasoanalysatorHandler(Instrument):
         """
         answer = {}
         for i, paramname in enumerate(["CO", "CH", "CO2", "O2", "NO", "L"]):
+            print(paramname, float_from_bytes(content[6 * i : 6 * (i + 1)]))
             answer[paramname] = float_from_bytes(content[6 * i : 6 * (i + 1)]) * 10**4
             
 
