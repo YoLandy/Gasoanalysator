@@ -130,10 +130,10 @@
               <item row="2" column="1">
                <widget class="QDoubleSpinBox" name="koeff_C_sb">
                 <property name="decimals">
-                 <number>2</number>
+                 <number>4</number>
                 </property>
                 <property name="singleStep">
-                 <double>0.010000000000000</double>
+                 <double>0.000100000000000</double>
                 </property>
                </widget>
               </item>
@@ -256,7 +256,7 @@
               <item row="2" column="1">
                <widget class="QDoubleSpinBox" name="koeff_S_sb">
                 <property name="decimals">
-                 <number>2</number>
+                 <number>4</number>
                 </property>
                 <property name="singleStep">
                  <double>0.010000000000000</double>
@@ -333,7 +333,11 @@
                  <widget class="QLineEdit" name="lineEdit_1"/>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_1"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_1">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="0" column="2">
                  <widget class="QRadioButton" name="radioButton_1">
@@ -349,7 +353,11 @@
                  <widget class="QLineEdit" name="lineEdit_2"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="1" column="2">
                  <widget class="QRadioButton" name="radioButton_2">
@@ -365,7 +373,11 @@
                  <widget class="QLineEdit" name="lineEdit_3"/>
                 </item>
                 <item row="2" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="2" column="2">
                  <widget class="QRadioButton" name="radioButton_3">
@@ -381,7 +393,11 @@
                  <widget class="QLineEdit" name="lineEdit_4"/>
                 </item>
                 <item row="3" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="3" column="2">
                  <widget class="QRadioButton" name="radioButton_4">
@@ -397,7 +413,11 @@
                  <widget class="QLineEdit" name="lineEdit_5"/>
                 </item>
                 <item row="4" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="4" column="2">
                  <widget class="QRadioButton" name="radioButton_5">
@@ -413,7 +433,11 @@
                  <widget class="QLineEdit" name="lineEdit_6"/>
                 </item>
                 <item row="5" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="5" column="2">
                  <widget class="QRadioButton" name="radioButton_6">
@@ -429,7 +453,11 @@
                  <widget class="QLineEdit" name="lineEdit_7"/>
                 </item>
                 <item row="6" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="6" column="2">
                  <widget class="QRadioButton" name="radioButton_7">
@@ -445,7 +473,11 @@
                  <widget class="QLineEdit" name="lineEdit_8"/>
                 </item>
                 <item row="7" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="7" column="2">
                  <widget class="QRadioButton" name="radioButton_8">
@@ -461,7 +493,11 @@
                  <widget class="QLineEdit" name="lineEdit_9"/>
                 </item>
                 <item row="8" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="8" column="2">
                  <widget class="QRadioButton" name="radioButton_9">
@@ -477,7 +513,11 @@
                  <widget class="QLineEdit" name="lineEdit_10"/>
                 </item>
                 <item row="9" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_10">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="9" column="2">
                  <widget class="QRadioButton" name="radioButton_10">
@@ -547,7 +587,11 @@
                  <widget class="QLineEdit" name="lineEdit_11"/>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="0" column="2">
                  <widget class="QRadioButton" name="radioButton_11">
@@ -563,7 +607,11 @@
                  <widget class="QLineEdit" name="lineEdit_12"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_12">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="1" column="2">
                  <widget class="QRadioButton" name="radioButton_12">
@@ -579,7 +627,11 @@
                  <widget class="QLineEdit" name="lineEdit_13"/>
                 </item>
                 <item row="2" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_13"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_13">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="2" column="2">
                  <widget class="QRadioButton" name="radioButton_13">
@@ -595,7 +647,11 @@
                  <widget class="QLineEdit" name="lineEdit_14"/>
                 </item>
                 <item row="3" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_14"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_14">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="3" column="2">
                  <widget class="QRadioButton" name="radioButton_14">
@@ -611,7 +667,11 @@
                  <widget class="QLineEdit" name="lineEdit_15"/>
                 </item>
                 <item row="4" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_15"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_15">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="4" column="2">
                  <widget class="QRadioButton" name="radioButton_15">
@@ -627,7 +687,11 @@
                  <widget class="QLineEdit" name="lineEdit_16"/>
                 </item>
                 <item row="5" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_16"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_16">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="5" column="2">
                  <widget class="QRadioButton" name="radioButton_16">
@@ -643,7 +707,11 @@
                  <widget class="QLineEdit" name="lineEdit_17"/>
                 </item>
                 <item row="6" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_17"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_17">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="6" column="2">
                  <widget class="QRadioButton" name="radioButton_17">
@@ -659,7 +727,11 @@
                  <widget class="QLineEdit" name="lineEdit_18"/>
                 </item>
                 <item row="7" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_18"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_18">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="7" column="2">
                  <widget class="QRadioButton" name="radioButton_18">
@@ -675,7 +747,11 @@
                  <widget class="QLineEdit" name="lineEdit_19"/>
                 </item>
                 <item row="8" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_19">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="8" column="2">
                  <widget class="QRadioButton" name="radioButton_19">
@@ -691,7 +767,11 @@
                  <widget class="QLineEdit" name="lineEdit_20"/>
                 </item>
                 <item row="9" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_20"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_20">
+                  <property name="decimals">
+                   <number>4</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="9" column="2">
                  <widget class="QRadioButton" name="radioButton_20">
