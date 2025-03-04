@@ -154,7 +154,7 @@
               <item row="0" column="1">
                <widget class="QDoubleSpinBox" name="mass_sb">
                 <property name="decimals">
-                 <number>4</number>
+                 <number>2</number>
                 </property>
                 <property name="maximum">
                  <double>9999.989999999999782</double>
