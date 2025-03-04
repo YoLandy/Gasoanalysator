@@ -35,6 +35,7 @@ class Instrument(QObject):
 
         if self.check_buffer(self.buffer):
             data = self.predprocess_data(self.buffer)
+            print(data)
             self.operate_data(data)
             self.buffer = b""
 

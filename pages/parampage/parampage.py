@@ -132,11 +132,19 @@ class ParamPage(BasePage):
         if sb.value() == DataManager.get_param(paramname):
             return
         
-        reply = QMessageBox.question(
-            self, "Подтверждение", f"Вы уверены, что хотите сохранить значение {self.param_map[paramname]['label']}?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox(self)
+        reply.setWindowTitle("Подтверждение")
+        reply.setText(f"Вы уверены, что хотите сохранить значение {self.param_map[paramname]['label']}?")
+        reply.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        # Устанавливаем текст кнопок на русский
+        reply.button(QMessageBox.Yes).setText("Да")
+        reply.button(QMessageBox.No).setText("Нет")
+
+        # Отображаем диалог и получаем ответ
+        result = reply.exec_()
         
-        if reply == QMessageBox.Yes:
+        if result == QMessageBox.Yes:
             print("save", paramname)
             DataManager.save_param(paramname, self.param_map[paramname]["sb"].value())
             if paramname in ["Koeff C", "Koeff S"]:
